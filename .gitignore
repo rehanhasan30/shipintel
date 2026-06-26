@@ -1,0 +1,41 @@
+# Help files and package managers
+.gradle
+.gradle-ok
+/build/
+!/gradle/wrapper/gradle-wrapper.jar
+/log/
+
+# IDEs and editors
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Operating System Files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Build/dependency directories for Angular & Maven
+node_modules/
+.angular/
+dist/
+/target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Environment variables & secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
