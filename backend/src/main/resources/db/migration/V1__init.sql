@@ -1,0 +1,2 @@
+-- Initial baseline for Flyway
+-- No tables created yet, this just initializes the flyway schema history table.
