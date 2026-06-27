@@ -1,0 +1,164 @@
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-stack-xl w-full">
+  <!-- Header & Search Filters -->
+  <div class="mb-stack-lg flex flex-col md:flex-row justify-between items-start md:items-end gap-stack-md">
+    <div>
+      <h1 class="font-headline-lg text-headline-lg text-on-surface mb-stack-xs">Courier Directory</h1>
+      <p class="font-body-md text-body-md text-on-surface-variant">Find and compare trusted logistics partners worldwide.</p>
+    </div>
+    
+    <!-- Filters Area -->
+    <div class="flex flex-wrap gap-stack-sm w-full md:w-auto items-center">
+      <!-- Text Search -->
+      <div class="relative w-full md:w-48">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+        <input 
+          type="text" 
+          [value]="courierService.searchQuery()"
+          (input)="updateSearch($event)"
+          class="w-full pl-10 pr-4 py-2 bg-white border border-surface-variant rounded focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-body-sm font-body-sm"
+          placeholder="Search..."
+        />
+      </div>
+
+      <!-- Coverage Select -->
+      <select 
+        [value]="courierService.filterCoverage()"
+        (change)="updateCoverage($event)"
+        class="bg-white border border-surface-variant rounded text-body-sm font-body-sm py-2 pl-3 pr-8 focus:border-primary focus:ring-primary/20 focus:outline-none"
+      >
+        <option value="All">Coverage: All</option>
+        <option value="Global">Coverage: Global</option>
+        <option value="Regional">Coverage: Regional</option>
+      </select>
+
+      <!-- Mode Select -->
+      <select 
+        [value]="courierService.filterMode()"
+        (change)="updateMode($event)"
+        class="bg-white border border-surface-variant rounded text-body-sm font-body-sm py-2 pl-3 pr-8 focus:border-primary focus:ring-primary/20 focus:outline-none"
+      >
+        <option value="All">Mode: All</option>
+        <option value="Express">Express</option>
+        <option value="Ground">Ground</option>
+        <option value="Sea">Sea</option>
+        <option value="Air">Air Cargo</option>
+      </select>
+
+      <!-- Rating Select -->
+      <select 
+        [value]="courierService.filterRating()"
+        (change)="updateRating($event)"
+        class="bg-white border border-surface-variant rounded text-body-sm font-body-sm py-2 pl-3 pr-8 focus:border-primary focus:ring-primary/20 focus:outline-none"
+      >
+        <option value="Any">Rating: Any</option>
+        <option value="4+ Stars">4+ Stars</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Core States: Loading / Error / Empty / Cards -->
+  <div class="relative min-h-[250px]">
+    @if (courierService.loading()) {
+      <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-20 gap-2 text-primary font-semibold">
+        <span class="material-symbols-outlined animate-spin text-[32px]">refresh</span>
+        <span>Loading shipping partners...</span>
+      </div>
+    }
+
+    @if (courierService.error()) {
+      <div class="bg-red-50 border border-red-200 rounded-xl p-stack-lg text-center max-w-lg mx-auto my-12 text-error">
+        <span class="material-symbols-outlined text-[48px] mb-2">error</span>
+        <h3 class="font-headline-sm text-headline-sm">Failed to Load Directory</h3>
+        <p class="text-sm mt-1 mb-4">{{ courierService.error() }}</p>
+        <button (click)="retryLoad()" class="bg-error text-white font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+          Retry Connection
+        </button>
+      </div>
+    } @else if (courierService.isEmpty()) {
+      <!-- Enhanced Empty State with clear filters CTA -->
+      <div class="py-20 text-center text-on-surface-variant border border-dashed border-outline-variant rounded-xl bg-surface-container-low/40 animate-in fade-in duration-200">
+        <span class="material-symbols-outlined text-[48px] mb-4 text-outline">search_off</span>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface">No couriers match your search.</h3>
+        <p class="font-body-sm text-body-sm mt-1 text-on-surface-variant">Try resetting your active filters or changing your search query.</p>
+        <button 
+          (click)="resetFilters()"
+          class="mt-6 bg-primary text-on-primary font-label-md text-label-md px-6 py-2.5 rounded-lg hover:bg-primary-container active:scale-95 transition-all shadow-sm"
+        >
+          Clear All Filters
+        </button>
+      </div>
+    } @else {
+      <!-- Card Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        @for (courier of courierService.filteredCouriers(); track courier.id) {
+          <div class="bg-white border border-surface-variant rounded-lg p-stack-md hover:shadow-md transition-shadow duration-200 group relative flex flex-col justify-between h-full">
+            <div>
+              <!-- Rating Star Badge -->
+              <div class="absolute top-stack-md right-stack-md flex items-center gap-1 bg-surface-container-lowest border border-surface-variant rounded-full px-2 py-1">
+                <span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;" aria-hidden="true">star</span>
+                <span class="font-label-sm text-label-sm">{{ courier.rating }}</span>
+              </div>
+              
+              <!-- Card Header -->
+              <div class="flex items-center gap-stack-md mb-stack-md">
+                <!-- Logo with client-side error fallback -->
+                <div class="w-12 h-12 rounded bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/30 flex-shrink-0">
+                  @if (courier.logoUrl) {
+                    <img 
+                      [src]="courier.logoUrl" 
+                      class="w-full h-full object-cover" 
+                      [alt]="courier.name"
+                      loading="lazy"
+                      #logoImg
+                      (error)="logoImg.style.display='none'; logoFallback.style.display='flex'"
+                    />
+                    <span #logoFallback style="display: none;" class="w-full h-full items-center justify-center font-bold text-primary text-headline-sm bg-surface-container-low">
+                      {{ courier.name.substring(0, 1) }}
+                    </span>
+                  } @else {
+                    <span class="font-bold text-primary text-headline-sm">
+                      {{ courier.name.substring(0, 1) }}
+                    </span>
+                  }
+                </div>
+                <div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface leading-tight">{{ courier.name }}</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">{{ courier.type }}</p>
+                </div>
+              </div>
+              
+              <!-- Details List -->
+              <div class="space-y-stack-sm mb-stack-md text-sm text-on-surface-variant">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px] text-outline" aria-hidden="true">local_shipping</span>
+                  <span>{{ courier.modes.join(', ') }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px] text-outline" aria-hidden="true">public</span>
+                  <span>{{ courier.coverage.join(', ') }}</span>
+                </div>
+              </div>
+
+              <!-- Badges/Tags -->
+              <div class="flex gap-2 flex-wrap mb-stack-md">
+                @for (tag of courier.tags; track tag) {
+                  <span class="px-2 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded text-[11px] font-semibold uppercase tracking-wider">
+                    {{ tag }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <!-- Profile CTA Button -->
+            <button 
+              [routerLink]="['/directory', courier.id]"
+              class="w-full mt-4 py-2 border border-surface-variant rounded text-on-surface font-label-md text-label-md group-hover:border-primary group-hover:text-primary transition-colors bg-white hover:bg-surface-container-low"
+            >
+              View Profile
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</main>

@@ -1,0 +1,7 @@
+export const VALIDATION_CONSTANTS = {
+  EMAIL_REGEX: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  MIN_CARGO_DIMENSION: 1,
+  MAX_CARGO_DIMENSION: 1000,
+  MIN_CARGO_WEIGHT: 0.1,
+  MAX_CARGO_WEIGHT: 100000
+};

@@ -1,0 +1,148 @@
+<div class="relative overflow-hidden w-full">
+  <!-- Responsive Background Glow Details to prevent mobile overflow -->
+  <div class="absolute -top-20 -right-20 md:-top-40 md:-right-40 w-64 h-64 md:w-96 md:h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute top-[300px] md:top-[400px] -left-20 md:-left-40 w-64 h-64 md:w-96 md:h-96 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Hero Section -->
+  <section class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-20 md:py-32 flex flex-col items-center text-center relative z-10">
+    <h1 class="font-display-lg text-display-lg text-on-surface mb-stack-md max-w-3xl mx-auto tracking-tight">
+      The Intelligent Way to Ship
+    </h1>
+    <p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-2xl mx-auto">
+      Compare rates, track shipments in real-time, and optimize your global logistics network with precision intelligence.
+    </p>
+    
+    <!-- Interactive Tracking Search -->
+    <div class="w-full max-w-2xl relative mb-4">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <span class="material-symbols-outlined text-outline">search</span>
+      </div>
+      <input 
+        type="text" 
+        [(value)]="searchVal" 
+        (input)="onInputChange($event)"
+        (keyup.enter)="trackShipment()"
+        class="w-full pl-12 pr-32 py-4 bg-surface-container-lowest border border-outline-variant rounded-full font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary-container focus:ring-0 input-ring transition-all card-shadow" 
+        placeholder="Enter tracking number (e.g., SHIP-9824) or search tools..." 
+      />
+      <button 
+        (click)="trackShipment()"
+        [disabled]="tracking().status === 'loading'"
+        class="absolute inset-y-1 right-1 bg-primary-container text-on-primary font-label-md text-label-md px-6 rounded-full hover:bg-primary transition-colors disabled:opacity-50"
+      >
+        {{ tracking().status === 'loading' ? 'Searching...' : 'Track' }}
+      </button>
+    </div>
+
+    <!-- Dynamic Tracking Result Box (Simulated Micro-interaction) -->
+    @if (tracking().status !== 'idle') {
+      <div class="w-full max-w-2xl bg-white border border-outline-variant rounded-xl p-stack-md mt-4 text-left card-shadow animate-in fade-in slide-in-from-top-2 duration-200">
+        @if (tracking().status === 'loading') {
+          <div class="flex items-center justify-center py-6 gap-2 text-on-surface-variant">
+            <span class="material-symbols-outlined animate-spin">refresh</span>
+            <span>Connecting to carrier API node...</span>
+          </div>
+        } @else if (tracking().status === 'found') {
+          <div>
+            <div class="flex justify-between items-center border-b border-outline-variant/50 pb-2 mb-3">
+              <span class="font-label-md text-label-md text-primary flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm">verified</span>
+                Active Shipment: {{ tracking().number }}
+              </span>
+              <span class="px-2 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded-full uppercase">In Transit</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <span class="block text-xs text-on-surface-variant uppercase font-semibold">Carrier</span>
+                <span class="font-medium text-on-surface">{{ tracking().carrier }}</span>
+              </div>
+              <div>
+                <span class="block text-xs text-on-surface-variant uppercase font-semibold">ETA</span>
+                <span class="font-medium text-on-surface">{{ tracking().eta }}</span>
+              </div>
+              <div>
+                <span class="block text-xs text-on-surface-variant uppercase font-semibold">Current Location</span>
+                <span class="font-medium text-on-surface">{{ tracking().location }}</span>
+              </div>
+              <div>
+                <span class="block text-xs text-on-surface-variant uppercase font-semibold">Last Update</span>
+                <span class="font-medium text-on-surface">{{ tracking().lastUpdate }}</span>
+              </div>
+            </div>
+          </div>
+        } @else {
+          <div class="flex items-center gap-2 text-error py-2">
+            <span class="material-symbols-outlined">error</span>
+            <span>Tracking number not found. Try "SHIP-9824" or "SHIP-7711".</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Stats Badges -->
+    <div class="mt-stack-lg flex flex-wrap justify-center gap-stack-md">
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm text-primary" style="font-variation-settings: 'FILL' 1;">verified</span> 
+        Over 1M Shipments
+      </span>
+      <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm text-secondary" style="font-variation-settings: 'FILL' 1;">local_shipping</span> 
+        500+ Carriers Integrated
+      </span>
+    </div>
+  </section>
+
+  <!-- Popular Tools Bento Grid -->
+  <section class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-stack-xl relative z-10">
+    <div class="mb-stack-lg">
+      <h2 class="font-headline-lg text-headline-lg text-on-surface">Popular Tools</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant mt-stack-xs">
+        Essential utilities for logistics professionals.
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+      <!-- Tool 1 -->
+      <a routerLink="/calculators" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg flex flex-col group hover-card-shadow transition-shadow">
+        <div class="w-12 h-12 bg-primary-fixed rounded-lg flex items-center justify-center mb-stack-md group-hover:scale-105 transition-transform">
+          <span class="material-symbols-outlined text-on-primary-fixed-variant">calculate</span>
+        </div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-xs">Rate Calculator</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow">
+          Instantly calculate volumetric weight and compare freight rates across global carriers.
+        </p>
+        <div class="mt-stack-md font-label-md text-label-md text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
+          Use Tool <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </div>
+      </a>
+      
+      <!-- Tool 2 -->
+      <a routerLink="/directory" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg flex flex-col group hover-card-shadow transition-shadow">
+        <div class="w-12 h-12 bg-secondary-fixed rounded-lg flex items-center justify-center mb-stack-md group-hover:scale-105 transition-transform">
+          <span class="material-symbols-outlined text-on-secondary-fixed-variant">compare_arrows</span>
+        </div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-xs">Courier Directory</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow">
+          Evaluate carrier performance metrics, SLA compliance, coverage, and carbon footprints.
+        </p>
+        <div class="mt-stack-md font-label-md text-label-md text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
+          Browse Directory <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </div>
+      </a>
+      
+      <!-- Tool 3 -->
+      <a routerLink="/resources" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg flex flex-col group hover-card-shadow transition-shadow">
+        <div class="w-12 h-12 bg-tertiary-fixed rounded-lg flex items-center justify-center mb-stack-md group-hover:scale-105 transition-transform">
+          <span class="material-symbols-outlined text-on-tertiary-fixed-variant">schedule</span>
+        </div>
+        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-xs">Insights & Guides</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant flex-grow">
+          Access carbon accounting manuals, micro-fulfillment blueprints, and supply chain updates.
+        </p>
+        <div class="mt-stack-md font-label-md text-label-md text-primary flex items-center gap-1 group-hover:gap-2 transition-all">
+          Read Articles <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,199 @@
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-stack-xl w-full">
+  
+  <!-- Page Header -->
+  <div class="mb-stack-lg">
+    <h1 class="font-headline-lg text-headline-lg text-on-surface mb-stack-xs">Logistics Insights & Resources</h1>
+    <p class="font-body-md text-body-md text-on-surface-variant">The latest industry news, guides, and strategic manuals.</p>
+  </div>
+
+  <!-- Core States: Loading / Error / Grid -->
+  <div class="relative min-h-[300px]">
+    @if (blogService.loading()) {
+      <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-20 gap-2 text-primary font-semibold">
+        <span class="material-symbols-outlined animate-spin text-[32px]">refresh</span>
+        <span>Loading insights & articles...</span>
+      </div>
+    }
+
+    @if (blogService.error()) {
+      <div class="bg-red-50 border border-red-200 rounded-xl p-stack-lg text-center max-w-lg mx-auto my-12 text-error">
+        <span class="material-symbols-outlined text-[48px] mb-2">error</span>
+        <h3 class="font-headline-sm text-headline-sm">Failed to Load Articles</h3>
+        <p class="text-sm mt-1 mb-4">{{ blogService.error() }}</p>
+        <button (click)="retryLoad()" class="bg-error text-white font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+          Retry Connection
+        </button>
+      </div>
+    } @else {
+      <!-- Bento Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+        
+        @for (article of blogService.articles(); track article.id) {
+          @if (article.highlighted) {
+            <!-- Highlight Card (4 columns) - Colored background, typography focus -->
+            <article class="col-span-1 md:col-span-4 bg-primary text-on-primary rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col h-full p-stack-lg relative">
+              <div class="absolute top-0 right-0 p-4 opacity-20">
+                <span class="material-symbols-outlined text-[120px] leading-none" aria-hidden="true">eco</span>
+              </div>
+              <div class="relative z-10 flex flex-col h-full">
+                <div class="mb-stack-md">
+                  <span class="bg-white/20 text-white font-label-sm text-label-sm px-3 py-1 rounded-full border border-white/30 backdrop-blur">
+                    {{ article.category }} • Special Edition
+                  </span>
+                </div>
+                <h3 class="font-headline-md text-headline-md text-white mb-stack-sm mt-stack-md leading-tight group-hover:underline cursor-pointer" [routerLink]="['/resources', article.id]">
+                  {{ article.title }}
+                </h3>
+                <p class="font-body-sm text-body-sm text-primary-fixed-dim mb-stack-lg line-clamp-4 leading-relaxed">
+                  {{ article.excerpt }}
+                </p>
+                <div class="mt-auto pt-stack-md border-t border-white/20 flex items-center justify-between">
+                  <span class="font-label-sm text-label-sm text-white">By {{ article.author }}</span>
+                  <span class="material-symbols-outlined text-white cursor-pointer group-hover:translate-x-1 transition-transform" [routerLink]="['/resources', article.id]" aria-hidden="true">arrow_forward</span>
+                </div>
+              </div>
+            </article>
+          } @else if (article.id === 'implementing-micro-fulfillment-centers') {
+            <!-- Wide Card (8 columns) -->
+            <article class="col-span-1 md:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_6px_-1px_rgba(0,30,80,0.05),0_2px_4px_-2px_rgba(0,30,80,0.05)] transition-all group flex flex-col sm:flex-row h-full">
+              <div class="w-full sm:w-2/5 h-48 sm:h-auto relative overflow-hidden bg-surface-variant flex-shrink-0">
+                @if (article.imageUrl) {
+                  <img 
+                    [src]="article.imageUrl" 
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    alt="Warehouse logistics visual" 
+                    #wideImg
+                    (error)="wideImg.style.display='none'; wideFallback.style.display='flex'"
+                  />
+                  <!-- Fallback layout -->
+                  <div #wideFallback style="display: none;" class="w-full h-full items-center justify-center bg-surface-container-low flex flex-col text-on-surface-variant p-4">
+                    <span class="material-symbols-outlined text-4xl mb-1" aria-hidden="true">inventory</span>
+                    <span class="text-xs font-semibold">ShipIntel Insights</span>
+                  </div>
+                }
+              </div>
+              <div class="w-full sm:w-3/5 p-stack-md sm:p-stack-lg flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-stack-sm">
+                    <span class="bg-surface-container-highest text-on-surface font-label-sm text-label-sm px-2 py-1 rounded">
+                      {{ article.category }}
+                    </span>
+                    <span class="text-outline font-label-sm text-label-sm">• {{ article.readTime }} read</span>
+                  </div>
+                  <h3 class="font-headline-md text-headline-md text-on-surface mb-stack-sm group-hover:text-primary transition-colors cursor-pointer" [routerLink]="['/resources', article.id]">
+                    {{ article.title }}
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md leading-relaxed">
+                    {{ article.excerpt }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-stack-sm border-t border-outline-variant/30 pt-4 mt-4">
+                  <span class="font-label-md text-label-md text-on-surface-variant">By {{ article.author }}</span>
+                  <span class="text-xs text-outline-variant font-label-sm">• {{ article.date }}</span>
+                </div>
+              </div>
+            </article>
+          } @else {
+            <!-- Standard Card (4 columns) -->
+            <article class="col-span-1 md:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_6px_-1px_rgba(0,30,80,0.05),0_2px_4px_-2px_rgba(0,30,80,0.05)] transition-all group flex flex-col h-full">
+              <div class="h-48 relative overflow-hidden bg-surface-variant flex-shrink-0">
+                @if (article.imageUrl) {
+                  <img 
+                    [src]="article.imageUrl" 
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    alt="Article banner" 
+                    loading="lazy"
+                    #stdImg
+                    (error)="stdImg.style.display='none'; stdFallback.style.display='flex'"
+                  />
+                  <!-- Fallback layout -->
+                  <div #stdFallback style="display: none;" class="w-full h-full items-center justify-center bg-surface-container-low flex flex-col text-on-surface-variant p-4">
+                    <span class="material-symbols-outlined text-3xl mb-1" aria-hidden="true">article</span>
+                    <span class="text-xs font-semibold">ShipIntel Insights</span>
+                  </div>
+                }
+                <div class="absolute top-3 left-3 flex gap-2">
+                  <span class="bg-surface-container-lowest/90 backdrop-blur text-on-surface font-label-sm text-label-sm px-2 py-1 rounded shadow-sm">
+                    {{ article.category }}
+                  </span>
+                </div>
+              </div>
+              <div class="p-stack-md flex flex-col flex-grow justify-between">
+                <div>
+                  <div class="flex items-center gap-stack-sm mb-stack-xs text-outline font-label-sm text-label-sm">
+                    <span>{{ article.date }}</span>
+                    <span>•</span>
+                    <span class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]" aria-hidden="true">schedule</span>
+                      {{ article.readTime }}
+                    </span>
+                  </div>
+                  <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-sm group-hover:text-primary transition-colors cursor-pointer" [routerLink]="['/resources', article.id]">
+                    {{ article.title }}
+                  </h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md line-clamp-3 leading-relaxed">
+                    {{ article.excerpt }}
+                  </p>
+                </div>
+                <div class="pt-stack-sm border-t border-outline-variant/50 flex items-center gap-stack-sm mt-4">
+                  <div class="w-6 h-6 rounded-full flex items-center justify-center font-label-sm text-label-sm text-white" [class]="article.authorInitials ? (article.authorBgClass || 'bg-surface-container-highest') : 'bg-surface-container-highest'">
+                    {{ article.authorInitials || 'A' }}
+                  </div>
+                  <span class="font-label-md text-label-md text-on-surface-variant">{{ article.author }}</span>
+                </div>
+              </div>
+            </article>
+          }
+        }
+
+        <!-- Small Utility Card (4 columns) - Newsletter Subscription -->
+        <article class="col-span-1 md:col-span-4 bg-surface-container bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary-fixed/30 to-surface-container rounded-xl overflow-hidden border border-outline-variant/50 p-stack-lg flex flex-col justify-center items-center text-center">
+          <span class="material-symbols-outlined text-[48px] text-primary mb-stack-sm" aria-hidden="true">mail</span>
+          <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-xs">Logistics Intelligence Weekly</h3>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mb-stack-md leading-relaxed">
+            Get the latest shipping guides, freight indexes, and cargo trends delivered straight to your inbox.
+          </p>
+          
+          @if (subscribed()) {
+            <div class="w-full p-3 bg-green-100 text-green-800 rounded-lg text-sm font-semibold flex items-center gap-2 justify-center animate-in fade-in duration-200" role="status">
+              <span class="material-symbols-outlined text-sm" aria-hidden="true">verified</span>
+              Subscribed Successfully!
+            </div>
+          } @else {
+            <form (submit)="onSubscribeSubmit($event)" class="w-full flex flex-col gap-2">
+              <label for="newsletter-email" class="sr-only">Email Address</label>
+              <input 
+                id="newsletter-email"
+                type="email"
+                required
+                [value]="emailVal"
+                (input)="onEmailChange($event)"
+                [disabled]="newsletterLoading()"
+                class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface font-body-sm text-body-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none disabled:opacity-50"
+                placeholder="Work email address"
+              />
+              <button 
+                type="submit"
+                [disabled]="newsletterLoading()"
+                class="w-full bg-primary-container text-on-primary font-label-md text-label-md py-2 rounded-lg hover:bg-primary transition-colors active:scale-95 transition-transform disabled:opacity-50"
+              >
+                {{ newsletterLoading() ? 'Subscribing...' : 'Subscribe' }}
+              </button>
+            </form>
+          }
+        </article>
+      </div>
+    }
+  </div>
+
+  <!-- Pagination/More Button -->
+  <div class="flex justify-center mt-stack-lg">
+    <button 
+      (click)="loadMore()"
+      class="px-6 py-2 bg-surface border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-2"
+    >
+      Load More Articles 
+      <span class="material-symbols-outlined text-[18px]" aria-hidden="true">expand_more</span>
+    </button>
+  </div>
+</main>

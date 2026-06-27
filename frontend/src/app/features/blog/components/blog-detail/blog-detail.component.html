@@ -1,0 +1,115 @@
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-stack-xl w-full">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="py-20 text-center text-primary font-semibold">
+      <span class="material-symbols-outlined animate-spin text-[48px] mb-2">refresh</span>
+      <div>Loading article details...</div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!loading() && error()) {
+    <div class="bg-red-50 border border-red-200 rounded-xl p-stack-lg text-center max-w-lg mx-auto my-12 text-error">
+      <span class="material-symbols-outlined text-[48px] mb-2">error</span>
+      <h3 class="font-headline-sm text-headline-sm">Failed to Load Article</h3>
+      <p class="text-sm mt-1 mb-4">{{ error() }}</p>
+      <a routerLink="/resources" class="bg-error text-white font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+        Return to Articles
+      </a>
+    </div>
+  }
+
+  <!-- Found Article Content -->
+  @if (!loading() && !error() && article()) {
+    <!-- Back Link -->
+    <a routerLink="/resources" class="text-primary hover:underline font-label-md text-label-md flex items-center gap-1 mb-6 w-fit">
+      <span class="material-symbols-outlined text-[16px]" aria-hidden="true">arrow_back</span>
+      Back to Articles
+    </a>
+
+    <!-- Header -->
+    <header class="mb-stack-xl max-w-3xl">
+      <div class="flex items-center gap-2 mb-stack-sm">
+        <span class="bg-surface-container-highest text-on-surface font-label-sm text-label-sm px-2.5 py-1 rounded">
+          {{ article()?.category }}
+        </span>
+        <span class="text-outline-variant font-label-sm text-label-sm">• {{ article()?.readTime }} Read Time</span>
+      </div>
+      <h1 class="font-display-lg text-display-lg text-on-surface mb-stack-md leading-tight tracking-tight">
+        {{ article()?.title }}
+      </h1>
+      
+      <div class="flex items-center gap-stack-sm pt-stack-sm border-t border-outline-variant/40 mt-6">
+        <div class="w-8 h-8 rounded-full flex items-center justify-center font-label-sm text-label-sm text-white" [class]="article()?.authorInitials ? (article()?.authorBgClass || 'bg-surface-container-highest') : 'bg-surface-container-highest'">
+          {{ article()?.authorInitials || 'A' }}
+        </div>
+        <div>
+          <div class="font-label-md text-label-md text-on-surface font-semibold">{{ article()?.author }}</div>
+          <div class="text-xs text-on-surface-variant font-label-sm">Published {{ article()?.date }}</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+      
+      <!-- Article Content (Col span 8) -->
+      <article class="lg:col-span-8 bg-white border border-outline-variant rounded-xl p-stack-lg shadow-sm">
+        @if (article()?.imageUrl) {
+          <div class="h-[200px] sm:h-[320px] rounded-lg overflow-hidden mb-8 bg-surface-container-low border border-outline-variant/30">
+            <img 
+              [src]="article()?.imageUrl" 
+              class="w-full h-full object-cover" 
+              alt="Article main visual" 
+              #detailImg
+              (error)="detailImg.style.display='none'; detailFallback.style.display='flex'"
+            />
+            <div #detailFallback style="display: none;" class="w-full h-full items-center justify-center bg-surface-container-low flex flex-col text-on-surface-variant">
+              <span class="material-symbols-outlined text-[64px] mb-2" aria-hidden="true">article</span>
+              <span class="text-sm font-semibold">ShipIntel Insights</span>
+            </div>
+          </div>
+        }
+        
+        <!-- Safe HTML content Injection -->
+        <div 
+          class="prose prose-blue max-w-none text-on-surface-variant leading-relaxed space-y-4"
+          [innerHTML]="article()?.content"
+        ></div>
+      </article>
+
+      <!-- Sidebar (Col span 4) -->
+      <aside class="lg:col-span-4 space-y-stack-lg">
+        <!-- Sidebar widget 1: Related Tools -->
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-stack-lg custom-shadow">
+          <h3 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md">Quick Utilities</h3>
+          <div class="space-y-stack-sm" role="navigation" aria-label="Quick Utilities Links">
+            <a routerLink="/calculators" class="flex items-center gap-3 p-3 rounded-lg border border-outline-variant hover:bg-surface-container-low hover:border-primary transition-all">
+              <span class="material-symbols-outlined text-primary" aria-hidden="true">calculate</span>
+              <div>
+                <span class="block font-label-md text-label-md text-on-surface leading-none">Rate Calculator</span>
+                <span class="text-xs text-on-surface-variant">Check volumetric shipping weight</span>
+              </div>
+            </a>
+            
+            <a routerLink="/directory" class="flex items-center gap-3 p-3 rounded-lg border border-outline-variant hover:bg-surface-container-low hover:border-primary transition-all">
+              <span class="material-symbols-outlined text-primary" aria-hidden="true">local_shipping</span>
+              <div>
+                <span class="block font-label-md text-label-md text-on-surface leading-none">Courier Directory</span>
+                <span class="text-xs text-on-surface-variant">Browse shipping partner stats</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Sidebar widget 2: About ShipIntel -->
+        <div class="bg-surface-container-low rounded-xl border border-outline-variant/60 p-stack-lg">
+          <h3 class="font-label-md text-label-md text-on-surface uppercase tracking-wider mb-2">ShipIntel Vision</h3>
+          <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            ShipIntel is built to deliver precision intelligence for logistics professionals, e-commerce sellers, and individuals across India.
+          </p>
+        </div>
+      </aside>
+    </div>
+  }
+</main>

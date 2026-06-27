@@ -1,0 +1,24 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.glass-nav {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.card-shadow {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+.hover-card-shadow:hover {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+.input-ring:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+.custom-shadow {
+    box-shadow: 0 4px 6px -1px rgb(0 74 198 / 0.05), 0 2px 4px -2px rgb(0 74 198 / 0.05);
+}
+.active-shadow {
+    box-shadow: 0 20px 25px -5px rgb(0 74 198 / 0.1), 0 8px 10px -6px rgb(0 74 198 / 0.1);
+}

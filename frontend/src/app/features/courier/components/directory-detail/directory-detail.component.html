@@ -1,0 +1,210 @@
+<main class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-8 pb-stack-xl w-full">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="py-20 text-center text-primary font-semibold">
+      <span class="material-symbols-outlined animate-spin text-[48px] mb-2">refresh</span>
+      <div>Loading carrier details...</div>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (!loading() && error()) {
+    <div class="bg-red-50 border border-red-200 rounded-xl p-stack-lg text-center max-w-lg mx-auto my-12 text-error">
+      <span class="material-symbols-outlined text-[48px] mb-2">error</span>
+      <h3 class="font-headline-sm text-headline-sm">Failed to Load Profile</h3>
+      <p class="text-sm mt-1 mb-4">{{ error() }}</p>
+      <a routerLink="/directory" class="bg-error text-white font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+        Return to Directory
+      </a>
+    </div>
+  }
+
+  <!-- Found Profile Content -->
+  @if (!loading() && !error() && courier()) {
+    <!-- Back Link -->
+    <a routerLink="/directory" class="text-primary hover:underline font-label-md text-label-md flex items-center gap-1 mb-6 w-fit">
+      <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+      Back to Directory
+    </a>
+
+    <!-- Main Banner Profile Header -->
+    <div class="bg-white border border-outline-variant rounded-xl p-stack-lg shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-stack-md relative overflow-hidden">
+      <!-- Responsive Glow -->
+      <div class="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 bg-primary/5 rounded-bl-full pointer-events-none"></div>
+      
+      <div class="flex items-center gap-stack-lg z-10">
+        <!-- Logo container with client-side image fallback -->
+        <div class="w-16 h-16 rounded bg-surface-container-low flex items-center justify-center overflow-hidden border border-outline-variant/30 flex-shrink-0">
+          @if (courier()?.logoUrl) {
+            <img 
+              [src]="courier()?.logoUrl" 
+              class="w-full h-full object-cover" 
+              [alt]="courier()?.name || 'Carrier Logo'" 
+              #logoImg
+              (error)="logoImg.style.display='none'; logoFallback.style.display='flex'"
+            />
+            <span #logoFallback style="display: none;" class="w-full h-full items-center justify-center font-bold text-primary text-headline-md bg-surface-container-low">
+              {{ courier()?.name?.substring(0, 1) }}
+            </span>
+          } @else {
+            <span class="font-bold text-primary text-headline-md">
+              {{ courier()?.name?.substring(0, 1) }}
+            </span>
+          }
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="font-display-lg text-headline-lg text-on-surface leading-tight">{{ courier()?.name }}</h1>
+            <span class="px-2.5 py-0.5 bg-green-100 text-green-800 text-xs font-semibold rounded-full uppercase tracking-wider">Active Partner</span>
+          </div>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-1">{{ courier()?.type }}</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 bg-surface-container-low border border-surface-variant rounded-full px-4 py-2 z-10 w-fit">
+        <span class="material-symbols-outlined text-secondary font-fill" style="font-variation-settings: 'FILL' 1;">star</span>
+        <span class="font-headline-sm text-headline-sm">{{ courier()?.rating }} / 5.0</span>
+        <span class="text-xs text-on-surface-variant">• Verified Performance</span>
+      </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter items-start">
+      
+      <!-- Left side: Description & Performance Metrics (Col span 4) -->
+      <div class="md:col-span-4 space-y-stack-lg">
+        <!-- About Card -->
+        <div class="bg-white rounded-xl border border-outline-variant p-stack-lg shadow-sm">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface mb-stack-md">About Provider</h2>
+          <p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+            {{ courier()?.description }}
+          </p>
+        </div>
+
+        <!-- Performance Metrics Card -->
+        <div class="bg-white rounded-xl border border-outline-variant p-stack-lg shadow-sm">
+          <h2 class="font-headline-sm text-headline-sm text-on-surface mb-stack-lg">Service Performance</h2>
+          
+          <div class="space-y-stack-md">
+            <!-- Transit Adherence -->
+            <div>
+              <div class="flex justify-between items-end mb-stack-xs">
+                <span class="font-label-md text-label-md text-on-surface-variant">SLA Transit Adherence</span>
+                <span class="font-headline-sm text-headline-sm text-primary">{{ courier()?.transitTimeRating }}%</span>
+              </div>
+              <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                <div class="bg-primary h-full rounded-full" [style.width.%]="courier()?.transitTimeRating"></div>
+              </div>
+            </div>
+
+            <!-- Billing Accuracy -->
+            <div>
+              <div class="flex justify-between items-end mb-stack-xs">
+                <span class="font-label-md text-label-md text-on-surface-variant">Billing Accuracy</span>
+                <span class="font-headline-sm text-headline-sm text-primary">{{ courier()?.billingAccuracy }}%</span>
+              </div>
+              <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                <div class="bg-primary h-full rounded-full" [style.width.%]="courier()?.billingAccuracy"></div>
+              </div>
+            </div>
+
+            <!-- Damage Claims -->
+            <div>
+              <div class="flex justify-between items-end mb-stack-xs">
+                <span class="font-label-md text-label-md text-on-surface-variant">Damage Claims Rate</span>
+                <span class="font-headline-sm text-headline-sm text-secondary-container">{{ courier()?.damageClaims }}</span>
+              </div>
+              <div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+                <div class="bg-secondary-container h-full rounded-full" style="width: 8%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: Network Coverage Map (Col span 8) -->
+      <div class="md:col-span-8 bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col relative h-[400px]">
+        <div class="p-stack-lg pb-0 z-10 absolute top-0 left-0 w-full bg-gradient-to-b from-white/90 to-transparent">
+          <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-stack-sm">
+            <span class="material-symbols-outlined text-primary">map</span>
+            Global Network Coverage
+          </h2>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mt-stack-xs">Major hubs and transit lanes</p>
+        </div>
+        
+        <!-- Coverage Map Background Image -->
+        <div 
+          class="flex-1 w-full h-full relative bg-cover bg-center"
+          style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlgXkShXzBEfZar8jjK4AwR701i_UTJr9-0pQNPD-rDwMLab34CW4g80-s3JVk_ZjBX68ABSDfc2PSEqx0aWnGvWxoCWHPRJxrAgJWrVoAm5oKJh_jgO_wmj0FKs8tq4emeWsCHUjZ3sachzqlT271m9RspxfepeZyZZxZjoLDCa1Djsi3dVw_rL-3q-fdutZQdoC85BonMoH9RBP4-YH-kGSIvWKmCesa63ikpPZgUM-MnhArnXfPabFdBRCUFW4eCwzIiY-ArTqo')"
+        >
+          <!-- Glowing Map Nodes Simulation -->
+          <div class="absolute top-[35%] left-[22%] w-3 h-3 bg-primary rounded-full animate-ping"></div>
+          <div class="absolute top-[35%] left-[22%] w-3 h-3 bg-primary rounded-full"></div>
+          
+          <div class="absolute top-[45%] left-[45%] w-3 h-3 bg-primary rounded-full animate-ping"></div>
+          <div class="absolute top-[45%] left-[45%] w-3 h-3 bg-primary rounded-full"></div>
+
+          <div class="absolute top-[52%] left-[76%] w-3 h-3 bg-primary rounded-full animate-ping"></div>
+          <div class="absolute top-[52%] left-[76%] w-3 h-3 bg-primary rounded-full"></div>
+        </div>
+      </div>
+
+      <!-- Bottom: Service Levels Table (Col span 12) -->
+      <div class="md:col-span-12 bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+        <div class="p-stack-lg border-b border-outline-variant bg-surface-bright flex flex-col sm:flex-row justify-between items-start sm:items-center gap-stack-sm">
+          <h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-stack-sm">
+            <span class="material-symbols-outlined text-primary">local_shipping</span>
+            Available Service Levels
+          </h2>
+          <button 
+            (click)="downloadRates()" 
+            class="text-primary font-label-md text-label-md hover:underline flex items-center gap-stack-xs"
+          >
+            Download Full Rate Card
+            <span class="material-symbols-outlined text-[16px]">download</span>
+          </button>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-surface-container-low border-b border-outline-variant">
+                <th class="py-stack-md px-stack-lg font-label-sm text-label-sm uppercase text-on-surface-variant font-semibold">Service Name</th>
+                <th class="py-stack-md px-stack-lg font-label-sm text-label-sm uppercase text-on-surface-variant font-semibold">Transit Time</th>
+                <th class="py-stack-md px-stack-lg font-label-sm text-label-sm uppercase text-on-surface-variant font-semibold">Max Weight</th>
+                <th class="py-stack-md px-stack-lg font-label-sm text-label-sm uppercase text-on-surface-variant font-semibold">Special Handling</th>
+                <th class="py-stack-md px-stack-lg font-label-sm text-label-sm uppercase text-on-surface-variant font-semibold text-right">Base Index</th>
+              </tr>
+            </thead>
+            <tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-outline-variant">
+              @for (level of courier()?.serviceLevels; track level.name) {
+                <tr class="hover:bg-surface-bright transition-colors">
+                  <td class="py-stack-md px-stack-lg font-medium flex items-center gap-stack-sm">
+                    <span class="material-symbols-outlined text-primary text-[20px]">
+                      {{ getServiceIcon(level.name) }}
+                    </span>
+                    {{ level.name }}
+                  </td>
+                  <td class="py-stack-md px-stack-lg text-on-surface-variant">{{ level.transitTime }}</td>
+                  <td class="py-stack-md px-stack-lg">{{ level.maxWeight }}</td>
+                  <td class="py-stack-md px-stack-lg">
+                    <span class="inline-flex items-center px-2 py-1 rounded border border-outline-variant text-label-sm bg-surface">
+                      {{ level.specialHandling }}
+                    </span>
+                  </td>
+                  <td class="py-stack-md px-stack-lg text-right font-mono text-mono-sm">{{ level.baseIndex }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="py-stack-lg text-center text-on-surface-variant">
+                    No service levels registered for this carrier profile.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</main>

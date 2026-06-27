@@ -1,0 +1,62 @@
+<header class="fixed top-0 left-0 w-full h-16 bg-white/80 dark:bg-inverse-surface/80 backdrop-blur-md border-b border-outline-variant dark:border-outline shadow-sm z-50 glass-nav">
+  <div class="max-w-container-max mx-auto h-full px-margin-mobile md:px-margin-desktop flex justify-between items-center">
+    <!-- Logo -->
+    <div class="flex items-center gap-stack-lg">
+      <a class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary tracking-tight" routerLink="/" routerLinkActive="" [routerLinkActiveOptions]="{exact: true}">
+        ShipIntel
+      </a>
+      
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-stack-md ml-stack-lg">
+        <a routerLink="/calculators" routerLinkActive="text-primary bg-surface-container-low font-semibold" class="text-on-surface-variant dark:text-surface-variant hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-3 py-2 rounded font-label-md text-label-md" [routerLinkActiveOptions]="{exact: false}">
+          Calculators
+        </a>
+        <a routerLink="/directory" routerLinkActive="text-primary bg-surface-container-low font-semibold" class="text-on-surface-variant dark:text-surface-variant hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-3 py-2 rounded font-label-md text-label-md" [routerLinkActiveOptions]="{exact: false}">
+          Directory
+        </a>
+        <a routerLink="/resources" routerLinkActive="text-primary bg-surface-container-low font-semibold" class="text-on-surface-variant dark:text-surface-variant hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-3 py-2 rounded font-label-md text-label-md" [routerLinkActiveOptions]="{exact: false}">
+          Resources
+        </a>
+        <a routerLink="/about" routerLinkActive="text-primary bg-surface-container-low font-semibold" class="text-on-surface-variant dark:text-surface-variant hover:text-primary hover:bg-surface-container-low dark:hover:bg-surface-container-highest transition-colors duration-200 px-3 py-2 rounded font-label-md text-label-md" [routerLinkActiveOptions]="{exact: true}">
+          About Us
+        </a>
+      </nav>
+    </div>
+    
+    <!-- Action Buttons -->
+    <div class="flex items-center gap-stack-md">
+      <button class="font-label-md text-label-md text-on-surface hover:text-primary transition-colors hidden sm:block active:scale-95 transition-transform" routerLink="/contact">
+        Contact Support
+      </button>
+      <button class="bg-primary-container text-on-primary font-label-md text-label-md px-4 py-2 rounded-lg hover:bg-primary transition-colors active:scale-95 transition-transform" routerLink="/directory">
+        Get Started
+      </button>
+      
+      <!-- Mobile Menu Button -->
+      <button (click)="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-low active:scale-95 transition-transform">
+        <span class="material-symbols-outlined">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Mobile Navigation Drawer -->
+  @if (isMobileMenuOpen()) {
+    <div class="md:hidden fixed top-16 left-0 w-full bg-white border-b border-outline-variant shadow-lg py-4 px-margin-mobile flex flex-col gap-4 animate-in fade-in slide-in-from-top-4 duration-200">
+      <a routerLink="/calculators" (click)="closeMobileMenu()" class="text-on-surface-variant hover:text-primary px-3 py-2 rounded font-label-md text-label-md" routerLinkActive="text-primary bg-surface-container-low font-semibold">
+        Calculators
+      </a>
+      <a routerLink="/directory" (click)="closeMobileMenu()" class="text-on-surface-variant hover:text-primary px-3 py-2 rounded font-label-md text-label-md" routerLinkActive="text-primary bg-surface-container-low font-semibold">
+        Directory
+      </a>
+      <a routerLink="/resources" (click)="closeMobileMenu()" class="text-on-surface-variant hover:text-primary px-3 py-2 rounded font-label-md text-label-md" routerLinkActive="text-primary bg-surface-container-low font-semibold">
+        Resources
+      </a>
+      <a routerLink="/about" (click)="closeMobileMenu()" class="text-on-surface-variant hover:text-primary px-3 py-2 rounded font-label-md text-label-md" routerLinkActive="text-primary bg-surface-container-low font-semibold">
+        About Us
+      </a>
+      <a routerLink="/contact" (click)="closeMobileMenu()" class="text-on-surface-variant hover:text-primary px-3 py-2 rounded font-label-md text-label-md" routerLinkActive="text-primary bg-surface-container-low font-semibold">
+        Contact Support
+      </a>
+    </div>
+  }
+</header>
