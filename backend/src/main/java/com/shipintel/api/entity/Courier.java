@@ -28,6 +28,19 @@ public class Courier {
     @Column(name = "website_url", length = 255)
     private String websiteUrl;
 
+    @Column(name = "tracking_url_template", length = 255)
+    private String trackingUrlTemplate;
+
+    @Column(name = "support_email", length = 100)
+    private String supportEmail;
+
+    @Column(name = "support_phone", length = 50)
+    private String supportPhone;
+
+    @Column(name = "status", length = 50)
+    @Builder.Default
+    private String status = "ACTIVE";
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "courier_coverage_areas",

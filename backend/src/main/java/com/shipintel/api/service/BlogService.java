@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.cache.annotation.Cacheable;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ public class BlogService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "articles")
     public List<ArticleDto> getAllArticles() {
         return articleRepository.findAllWithCategory().stream()
                 .map(this::mapToDto)
@@ -27,6 +29,7 @@ public class BlogService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "articles", key = "#identifier")
     public Optional<ArticleDto> getArticleBySlugOrId(String identifier) {
         // Try parsing as ID first
         try {

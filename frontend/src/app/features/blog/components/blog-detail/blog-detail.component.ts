@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
+import { SeoService } from '../../../../core/services/seo.service';
 import { BlogService } from '../../services/blog.service';
 import { Article } from '../../models/blog.model';
 
@@ -60,8 +60,7 @@ import { Article } from '../../models/blog.model';
 export class BlogDetailComponent implements OnInit {
   private readonly _route = inject(ActivatedRoute);
   private readonly _blogService = inject(BlogService);
-  private readonly _titleService = inject(Title);
-  private readonly _metaService = inject(Meta);
+  private readonly _seoService = inject(SeoService);
 
   readonly article = signal<Article | undefined>(undefined);
   readonly loading = signal(false);
@@ -85,11 +84,36 @@ export class BlogDetailComponent implements OnInit {
         if (data) {
           this.article.set(data);
           
-          // Set dynamic SEO titles and meta tags based on retrieved article title
-          this._titleService.setTitle(`${data.title} — ShipIntel Logistics Insights`);
-          this._metaService.updateTag({
-            name: 'description',
-            content: data.excerpt || `Read the detailed guide on ${data.title} inside the ShipIntel strategic resources hub.`
+          const desc = data.excerpt || `Read the detailed guide on ${data.title} inside the ShipIntel strategic resources hub.`;
+          
+          // Set dynamic SEO titles, canonical link, OG tags, and structured data
+          this._seoService.updateTitle(`${data.title} — ShipIntel Logistics Insights`);
+          this._seoService.updateMetaTags({
+            description: desc,
+            type: 'article',
+            image: data.imageUrl
+          });
+          this._seoService.updateCanonicalUrl();
+          
+          this._seoService.addStructuredData({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": data.title,
+            "description": desc,
+            "image": data.imageUrl,
+            "datePublished": "2026-07-01", 
+            "author": {
+              "@type": "Person",
+              "name": data.author
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "ShipIntel",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://shipintel.in/assets/images/og-image.jpg"
+              }
+            }
           });
         } else {
           this.error.set('Requested article was not found.');
