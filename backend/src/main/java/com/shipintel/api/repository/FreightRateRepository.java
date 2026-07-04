@@ -15,8 +15,8 @@ public interface FreightRateRepository extends JpaRepository<FreightRate, Long> 
     @Query("SELECT r FROM FreightRate r " +
            "JOIN FETCH r.courierService s " +
            "JOIN FETCH s.courier c " +
-           "WHERE r.originZip = :origin " +
-           "AND r.destinationZip = :destination " +
+           "WHERE ((r.originZip = :origin AND r.destinationZip = :destination) " +
+           "OR (r.originZip = :destination AND r.destinationZip = :origin)) " +
            "AND :weight >= r.minWeightKg " +
            "AND :weight <= r.maxWeightKg")
     List<FreightRate> findMatchingRates(

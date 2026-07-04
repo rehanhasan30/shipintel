@@ -71,6 +71,9 @@ public class CalculatorService {
         } else {
             // Fallback: Generate realistic rates for all database couriers matching the requested mode
             List<Courier> allCouriers = courierRepository.findAllWithRelations();
+            double distance = getDistanceBetween(mapCityToZip(input.getOrigin()), mapCityToZip(input.getDestination()));
+            double distanceMultiplier = 0.6 + (distance / 2000.0);
+
             for (Courier courier : allCouriers) {
                 List<CourierServiceEntity> matchingServices = courier.getServices().stream()
                         .filter(s -> targetModes.contains(s.getTransportMode()))
@@ -79,7 +82,9 @@ public class CalculatorService {
                 for (CourierServiceEntity service : matchingServices) {
                     double costPerKg = service.getTransportMode() == TransportMode.AIR ? 18.5 : 7.2;
                     double baseFee = service.getTransportMode() == TransportMode.AIR ? 250.0 : 120.0;
-                    int days = service.getTransportMode() == TransportMode.AIR ? 2 : 5;
+                    int days = service.getTransportMode() == TransportMode.AIR ? 
+                            (distance < 1000 ? 1 : 2) : 
+                            (distance < 1000 ? 3 : (distance < 1800 ? 5 : 6));
 
                     // Apply courier-specific rate factors to make rates and times different
                     String cName = courier.getName().toLowerCase();
@@ -99,7 +104,7 @@ public class CalculatorService {
                         days += 1;
                     } // Delhivery remains at 1.0 (standard benchmark)
 
-                    double cost = Math.round((chargeableWeight * costPerKg + baseFee) * 100.0) / 100.0;
+                    double cost = Math.round((chargeableWeight * costPerKg + baseFee) * distanceMultiplier * 100.0) / 100.0;
 
                     recommendations.add(CourierRecommendationDto.builder()
                             .courierName(courier.getName() + " (" + getModeLabel(service.getTransportMode()) + ")")
@@ -167,5 +172,46 @@ public class CalculatorService {
         if (clean.contains("kolkata")) return "700001";
         if (clean.contains("hyderabad")) return "500001";
         return input.trim();
+    }
+
+    private double getDistanceBetween(String zip1, String zip2) {
+        // Approximate latitude and longitude coordinates for major Indian metro zip codes:
+        // Delhi (110001): Lat 28.61, Lon 77.20
+        // Mumbai (400001): Lat 18.92, Lon 72.82
+        // Bangalore (560001): Lat 12.97, Lon 77.59
+        // Chennai (600001): Lat 13.08, Lon 80.27
+        // Kolkata (700001): Lat 22.57, Lon 88.36
+        // Hyderabad (500001): Lat 17.38, Lon 78.48
+        
+        double lat1 = 20.0;
+        double lon1 = 78.0;
+        double lat2 = 20.0;
+        double lon2 = 78.0;
+        
+        if ("110001".equals(zip1)) { lat1 = 28.61; lon1 = 77.20; }
+        else if ("400001".equals(zip1)) { lat1 = 18.92; lon1 = 72.82; }
+        else if ("560001".equals(zip1)) { lat1 = 12.97; lon1 = 77.59; }
+        else if ("600001".equals(zip1)) { lat1 = 13.08; lon1 = 80.27; }
+        else if ("700001".equals(zip1)) { lat1 = 22.57; lon1 = 88.36; }
+        else if ("500001".equals(zip1)) { lat1 = 17.38; lon1 = 78.48; }
+        
+        if ("110001".equals(zip2)) { lat2 = 28.61; lon2 = 77.20; }
+        else if ("400001".equals(zip2)) { lat2 = 18.92; lon2 = 72.82; }
+        else if ("560001".equals(zip2)) { lat2 = 12.97; lon2 = 77.59; }
+        else if ("600001".equals(zip2)) { lat2 = 13.08; lon2 = 80.27; }
+        else if ("700001".equals(zip2)) { lat2 = 22.57; lon2 = 88.36; }
+        else if ("500001".equals(zip2)) { lat2 = 17.38; lon2 = 78.48; }
+        
+        // Haversine formula to calculate distance in km
+        final int R = 6371; // Radius of the earth
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c;
+        
+        return distance > 10.0 ? distance : 500.0; // Default fallback to 500km if same city/zip
     }
 }
