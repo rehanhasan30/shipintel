@@ -73,7 +73,7 @@
               <!-- Origin & Destination -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
                 <div class="flex flex-col gap-unit">
-                  <label class="font-label-md text-label-md text-on-surface" for="origin">Origin Port/City</label>
+                  <label class="font-label-md text-label-md text-on-surface" for="origin">Origin Pincode / City</label>
                   <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline-variant" aria-hidden="true">location_on</span>
                     <input 
@@ -83,13 +83,13 @@
                       [value]="calcService.origin()"
                       (input)="updateOrigin($event)"
                       class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
-                      placeholder="e.g., Shanghai"
+                      placeholder="e.g., Delhi or 110001"
                       required
                     />
                   </div>
                 </div>
                 <div class="flex flex-col gap-unit">
-                  <label class="font-label-md text-label-md text-on-surface" for="destination">Destination</label>
+                  <label class="font-label-md text-label-md text-on-surface" for="destination">Destination Pincode / City</label>
                   <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline-variant" aria-hidden="true">flag</span>
                     <input 
@@ -99,7 +99,7 @@
                       [value]="calcService.destination()"
                       (input)="updateDestination($event)"
                       class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all"
-                      placeholder="e.g., Los Angeles"
+                      placeholder="e.g., Mumbai or 400001"
                       required
                     />
                   </div>
@@ -256,7 +256,7 @@
                 <span class="font-label-sm text-label-sm text-primary uppercase tracking-wider relative z-10">Est. Lowest Cost</span>
                 <div class="flex items-end gap-1 relative z-10">
                   <span class="font-headline-lg text-headline-lg text-primary-container">
-                    \${{ calcService.estimatedLowestCost() }}
+                    ₹{{ calcService.estimatedLowestCost() }}
                   </span>
                 </div>
               </div>
@@ -292,7 +292,7 @@
                       </div>
                     </div>
                     <div class="text-right">
-                      <div class="font-headline-md text-headline-md text-on-surface">\${{ item.cost }}</div>
+                      <div class="font-headline-md text-headline-md text-on-surface">₹{{ item.cost }}</div>
                       <button 
                         (click)="selectRecommendation(item.courierName, item.cost)"
                         class="font-label-sm text-label-sm text-primary opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity hover:underline"
@@ -314,7 +314,7 @@
               <div class="p-stack-md bg-green-50 border border-green-200 rounded-xl flex items-center justify-between text-green-800 animate-in fade-in duration-200" role="status">
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-                  <span>Selected <strong>{{ selectedRateName() }}</strong> at <strong>\${{ selectedRateCost() }}</strong></span>
+                  <span>Selected <strong>{{ selectedRateName() }}</strong> at <strong>₹{{ selectedRateCost() }}</strong></span>
                 </div>
                 <button (click)="selectedRateName.set('')" class="text-green-800 hover:text-green-950 font-semibold text-sm">Dismiss</button>
               </div>

@@ -36,3 +36,14 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
+
+app:
+  cors:
+    allowed-origins:
+      - http://localhost:4200
+      - https://shipintel.in
+  admin:
+    username: admin
+    password: ${ADMIN_PASSWORD:AdminSecurePassword2026}
+  sitemap:
+    base-url: https://shipintel.in

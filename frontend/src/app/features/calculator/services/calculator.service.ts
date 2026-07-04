@@ -10,8 +10,8 @@ export class CalculatorService {
   private readonly _httpService = inject(HttpService);
 
   // Input signals
-  readonly origin = signal('Shanghai');
-  readonly destination = signal('Los Angeles');
+  readonly origin = signal('Delhi');
+  readonly destination = signal('Mumbai');
   readonly length = signal<number>(50);
   readonly width = signal<number>(40);
   readonly height = signal<number>(30);
