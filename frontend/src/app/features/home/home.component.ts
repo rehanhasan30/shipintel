@@ -1,13 +1,23 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
-interface TrackingState {
-  number: string;
-  status: 'idle' | 'loading' | 'found' | 'error';
-  carrier?: string;
-  eta?: string;
-  location?: string;
-  lastUpdate?: string;
+interface SearchResultDto {
+  type: 'TRACKING' | 'COURIER' | 'ARTICLE' | 'CALCULATOR';
+  title: string;
+  description: string;
+  url: string;
+  score: number;
+  
+  carrierName?: string;
+  trackingNumber?: string;
+  supportEmail?: string;
+  supportPhone?: string;
+  logoBgClass?: string;
+  logoInitials?: string;
+  tab?: string;
+  category?: string;
 }
 
 @Component({
@@ -22,51 +32,47 @@ interface TrackingState {
   `]
 })
 export class HomeComponent {
+  private readonly _http = inject(HttpClient);
+
   searchVal = '';
-  tracking = signal<TrackingState>({
-    number: '',
-    status: 'idle'
-  });
+  searchLoading = signal(false);
+  searchResult = signal<SearchResultDto[] | null>(null);
 
   onInputChange(event: Event) {
     this.searchVal = (event.target as HTMLInputElement).value;
+    if (!this.searchVal.trim()) {
+      this.searchResult.set(null);
+    }
   }
 
-  trackShipment() {
-    const num = this.searchVal.toUpperCase().trim();
-    if (!num) return;
+  executeUniversalSearch() {
+    const query = this.searchVal.trim();
+    if (!query) {
+      this.searchResult.set(null);
+      return;
+    }
 
-    this.tracking.set({
-      number: num,
-      status: 'loading'
-    });
+    this.searchLoading.set(true);
+    const url = `${environment.apiBaseUrl}/api/v1/search?q=${encodeURIComponent(query)}`;
 
-    // Simulate Network Request Delay
-    setTimeout(() => {
-      if (num === 'SHIP-9824') {
-        this.tracking.set({
-          number: num,
-          status: 'found',
-          carrier: 'SwiftLogix Global',
-          eta: 'June 29, 2026',
-          location: 'Hub Mumbai (BOM)',
-          lastUpdate: 'Out for customs clearance'
-        });
-      } else if (num === 'SHIP-7711') {
-        this.tracking.set({
-          number: num,
-          status: 'found',
-          carrier: 'Meridian Freight',
-          eta: 'July 05, 2026',
-          location: 'Suez Canal Transit',
-          lastUpdate: 'Vessel departure confirmed'
-        });
-      } else {
-        this.tracking.set({
-          number: num,
-          status: 'error'
-        });
+    this._http.get<{ success: boolean; data: SearchResultDto[] }>(url).subscribe({
+      next: (res) => {
+        if (res && res.success) {
+          this.searchResult.set(res.data);
+        } else {
+          this.searchResult.set([]);
+        }
+        this.searchLoading.set(false);
+      },
+      error: () => {
+        this.searchResult.set([]);
+        this.searchLoading.set(false);
       }
-    }, 1200);
+    });
+  }
+
+  openCustomCarrierTracking(trackingUrlTemplate: string) {
+    const trackingUrl = trackingUrlTemplate.replace('{AWB}', this.searchVal.trim());
+    window.open(trackingUrl, '_blank', 'noopener,noreferrer');
   }
 }

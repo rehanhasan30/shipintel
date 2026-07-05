@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ public class CourierService {
     private final CourierRepository courierRepository;
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "couriers")
     public List<CourierDto> getAllCouriers() {
         return courierRepository.findAllWithRelations().stream()
                 .map(this::mapToDto)
@@ -27,6 +29,7 @@ public class CourierService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(value = "couriers", key = "#id")
     public Optional<CourierDto> getCourierById(Long id) {
         return courierRepository.findById(id)
                 .map(this::mapToDto);

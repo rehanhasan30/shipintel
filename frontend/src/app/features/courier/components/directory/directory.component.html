@@ -17,6 +17,7 @@
           (input)="updateSearch($event)"
           class="w-full pl-10 pr-4 py-2 bg-white border border-surface-variant rounded focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 text-body-sm font-body-sm"
           placeholder="Search..."
+          aria-label="Search couriers"
         />
       </div>
 
@@ -25,6 +26,7 @@
         [value]="courierService.filterCoverage()"
         (change)="updateCoverage($event)"
         class="bg-white border border-surface-variant rounded text-body-sm font-body-sm py-2 pl-3 pr-8 focus:border-primary focus:ring-primary/20 focus:outline-none"
+        aria-label="Filter by coverage"
       >
         <option value="All">Coverage: All</option>
         <option value="Global">Coverage: Global</option>
@@ -36,6 +38,7 @@
         [value]="courierService.filterMode()"
         (change)="updateMode($event)"
         class="bg-white border border-surface-variant rounded text-body-sm font-body-sm py-2 pl-3 pr-8 focus:border-primary focus:ring-primary/20 focus:outline-none"
+        aria-label="Filter by transport mode"
       >
         <option value="All">Mode: All</option>
         <option value="Express">Express</option>
@@ -49,6 +52,7 @@
         [value]="courierService.filterRating()"
         (change)="updateRating($event)"
         class="bg-white border border-surface-variant rounded text-body-sm font-body-sm py-2 pl-3 pr-8 focus:border-primary focus:ring-primary/20 focus:outline-none"
+        aria-label="Filter by rating"
       >
         <option value="Any">Rating: Any</option>
         <option value="4+ Stars">4+ Stars</option>
@@ -59,9 +63,24 @@
   <!-- Core States: Loading / Error / Empty / Cards -->
   <div class="relative min-h-[250px]">
     @if (courierService.loading()) {
-      <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-20 gap-2 text-primary font-semibold">
-        <span class="material-symbols-outlined animate-spin text-[32px]">refresh</span>
-        <span>Loading shipping partners...</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+        @for (skele of [1, 2, 3, 4, 5, 6]; track skele) {
+          <div class="bg-white border border-surface-variant rounded-lg p-stack-md animate-pulse space-y-4">
+            <div class="flex justify-between items-start">
+              <div class="w-12 h-12 rounded bg-surface-container-low"></div>
+              <div class="w-12 h-6 bg-surface-container-low rounded-full"></div>
+            </div>
+            <div class="space-y-2">
+              <div class="w-3/4 h-5 bg-surface-container-low rounded"></div>
+              <div class="w-1/2 h-4 bg-surface-container-low rounded"></div>
+            </div>
+            <div class="space-y-2 pt-2">
+              <div class="w-full h-4 bg-surface-container-low rounded"></div>
+              <div class="w-5/6 h-4 bg-surface-container-low rounded"></div>
+            </div>
+            <div class="w-full h-10 bg-surface-container-low rounded mt-4"></div>
+          </div>
+        }
       </div>
     }
 
@@ -149,13 +168,14 @@
               </div>
             </div>
 
-            <!-- Profile CTA Button -->
-            <button 
+            <!-- Profile CTA Link -->
+            <a 
               [routerLink]="['/directory', courier.id]"
-              class="w-full mt-4 py-2 border border-surface-variant rounded text-on-surface font-label-md text-label-md group-hover:border-primary group-hover:text-primary transition-colors bg-white hover:bg-surface-container-low"
+              class="w-full mt-4 py-2 border border-surface-variant rounded text-on-surface font-label-md text-label-md group-hover:border-primary group-hover:text-primary transition-colors bg-white hover:bg-surface-container-low text-center block"
+              role="button"
             >
               View Profile
-            </button>
+            </a>
           </div>
         }
       </div>

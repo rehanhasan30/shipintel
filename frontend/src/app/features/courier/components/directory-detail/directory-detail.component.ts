@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
+import { SeoService } from '../../../../core/services/seo.service';
 import { CourierService } from '../../services/courier.service';
 import { Courier } from '../../models/courier.model';
 
@@ -19,8 +19,7 @@ import { Courier } from '../../models/courier.model';
 export class DirectoryDetailComponent implements OnInit {
   private readonly _route = inject(ActivatedRoute);
   private readonly _courierService = inject(CourierService);
-  private readonly _titleService = inject(Title);
-  private readonly _metaService = inject(Meta);
+  private readonly _seoService = inject(SeoService);
 
   readonly courier = signal<Courier | undefined>(undefined);
   readonly loading = signal(false);
@@ -44,11 +43,30 @@ export class DirectoryDetailComponent implements OnInit {
         if (data) {
           this.courier.set(data);
           
-          // Set dynamic SEO titles and meta tags based on retrieved courier name
-          this._titleService.setTitle(`${data.name} — Verified Courier Profile & SLA Ratings`);
-          this._metaService.updateTag({
-            name: 'description',
-            content: `View ${data.name} performance indexes, including ${data.transitTimeRating}% SLA adherence, ${data.billingAccuracy}% billing accuracy, and available service routes.`
+          // Set dynamic SEO titles, canonical link, OG tags, and structured data
+          this._seoService.updateTitle(`${data.name} — Verified Courier Profile & SLA Ratings`);
+          this._seoService.updateMetaTags({
+            description: `View ${data.name} performance indexes, including ${data.transitTimeRating}% SLA adherence, ${data.billingAccuracy}% billing accuracy, and available service routes.`,
+            type: 'profile'
+          });
+          this._seoService.updateCanonicalUrl();
+          
+          this._seoService.addStructuredData({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "name": data.name,
+            "provider": {
+              "@type": "LocalBusiness",
+              "name": data.name,
+              "image": "https://shipintel.in/assets/images/og-image.jpg"
+            },
+            "description": data.description,
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": data.rating.toString(),
+              "bestRating": "5",
+              "ratingCount": "100"
+            }
           });
         } else {
           this.error.set('Carrier profile not found in directory.');

@@ -2,7 +2,7 @@ import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
-import { Title, Meta } from '@angular/platform-browser';
+import { SeoService } from './core/services/seo.service';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
@@ -17,8 +17,7 @@ export class App implements OnInit, OnDestroy {
   
   private readonly _router = inject(Router);
   private readonly _activatedRoute = inject(ActivatedRoute);
-  private readonly _titleService = inject(Title);
-  private readonly _metaService = inject(Meta);
+  private readonly _seoService = inject(SeoService);
   private _routerSub?: Subscription;
 
   ngOnInit() {
@@ -36,11 +35,12 @@ export class App implements OnInit, OnDestroy {
     ).subscribe({
       next: (data) => {
         if (data['title']) {
-          this._titleService.setTitle(data['title']);
+          this._seoService.updateTitle(data['title']);
         }
         if (data['description']) {
-          this._metaService.updateTag({ name: 'description', content: data['description'] });
+          this._seoService.updateMetaTags({ description: data['description'] });
         }
+        this._seoService.updateCanonicalUrl();
       }
     });
   }

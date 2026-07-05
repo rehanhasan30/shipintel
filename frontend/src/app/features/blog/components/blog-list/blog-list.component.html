@@ -9,9 +9,28 @@
   <!-- Core States: Loading / Error / Grid -->
   <div class="relative min-h-[300px]">
     @if (blogService.loading()) {
-      <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-20 gap-2 text-primary font-semibold">
-        <span class="material-symbols-outlined animate-spin text-[32px]">refresh</span>
-        <span>Loading insights & articles...</span>
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter animate-pulse">
+        <!-- Skeleton Highlight Card (4 cols) -->
+        <div class="col-span-1 md:col-span-4 bg-surface-container-low rounded-xl p-stack-lg flex flex-col justify-between h-[380px]">
+          <div class="space-y-4">
+            <div class="w-24 h-6 bg-surface-container-high rounded-full"></div>
+            <div class="w-full h-16 bg-surface-container-high rounded"></div>
+            <div class="w-5/6 h-20 bg-surface-container-high rounded"></div>
+          </div>
+          <div class="w-full h-8 bg-surface-container-high rounded"></div>
+        </div>
+        <!-- Skeleton Wide Card (8 cols) -->
+        <div class="col-span-1 md:col-span-8 bg-surface-container-low rounded-xl p-stack-lg flex flex-col sm:flex-row gap-4 h-[380px]">
+          <div class="w-full sm:w-2/5 bg-surface-container-high rounded-lg h-48 sm:h-full"></div>
+          <div class="w-full sm:w-3/5 flex flex-col justify-between py-2">
+            <div class="space-y-4">
+              <div class="w-20 h-6 bg-surface-container-high rounded-full"></div>
+              <div class="w-full h-10 bg-surface-container-high rounded"></div>
+              <div class="w-5/6 h-12 bg-surface-container-high rounded"></div>
+            </div>
+            <div class="w-full h-8 bg-surface-container-high rounded"></div>
+          </div>
+        </div>
       </div>
     }
 
