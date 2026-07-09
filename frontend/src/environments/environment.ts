@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://api.shipintel.in',
+  apiBaseUrl: 'https://shipintel-api.onrender.com',
   apiVersion: 'v1',
   useMockData: false
 };
